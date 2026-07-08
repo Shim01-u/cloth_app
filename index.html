@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>服管理アプリ</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 0 10px; color: #333; }
+        .form-group { margin-bottom: 12px; }
+        label { display: inline-block; width: 100px; font-weight: bold; }
+        input { padding: 6px; width: 220px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 7px 20px; cursor: pointer; background-color: #222; color: white; border: none; border-radius: 4px; font-weight: bold; }
+        button:hover { background-color: #555; }
+        .item-card { border: 1px solid #ddd; padding: 12px; margin-top: 12px; border-radius: 6px; background: #fdfdfd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h1 { border-bottom: 2px solid #222; padding-bottom: 8px; }
+        h2 { font-size: 1.2rem; margin-top: 24px; color: #444; }
+    </style>
+</head>
+<body>
+    <h1>服管理アプリケーション</h1>
+
+    <h2>👚 新しい服の登録</h2>
+    <div class="form-group">
+        <label>ブランド:</label>
+        <input type="text" id="brand" placeholder="例: Professor. E">
+    </div>
+    <div class="form-group">
+        <label>アイテム名:</label>
+        <input type="text" id="name" placeholder="例: ダメージデニム (必須)">
+    </div>
+    <div class="form-group">
+        <label>素材:</label>
+        <input type="text" id="material" placeholder="例: Cotton">
+    </div>
+    <button onclick="addItem()">登録する</button>
+
+    <h2>📋 登録済みの服一覧</h2>
+    <div id="itemList"></div>
+
+    <script>
+        const API_URL = '/api/items';
+
+        async function fetchItems() {
+            try {
+                const res = await fetch(API_URL);
+                const items = await res.json();
+                const listDiv = document.getElementById('itemList');
+                listDiv.innerHTML = '';
+
+                if (items.length === 0) {
+                    listDiv.innerHTML = '<p style="color:#777;">登録されている服はありません。</p>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-card';
+                    div.innerHTML = `
+                        <strong>ブランド:</strong> ${item.brand || '未設定'}<br>
+                        <strong>アイテム名:</strong> ${item.name}<br>
+                        <strong>素材:</strong> ${item.material || '未設定'}<br>
+                        <small style="color:#888; display:block; margin-top:4px;">登録日: ${new Date(item.created_at).toLocaleString()}</small>
+                    `;
+                    listDiv.appendChild(div);
+                });
+            } catch (err) {
+                alert('データ取得に失敗しました');
+            }
+        }
+
+        async function addItem() {
+            const brand = document.getElementById('brand').value;
+            const name = document.getElementById('name').value;
+            const material = document.getElementById('material').value;
+
+            if (!name) {
+                alert('アイテム名を入力してください！');
+                return;
+            }
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ brand, name, material })
+                });
+
+                if (res.ok) {
+                    alert('登録しました！');
+                    document.getElementById('brand').value = '';
+                    document.getElementById('name').value = '';
+                    document.getElementById('material').value = '';
+                    fetchItems();
+                } else {
+                    const errData = await res.json();
+                    alert('エラー: ' + errData.error);
+                }
+            } catch (err) {
+                alert('登録に失敗しました');
+            }
+        }
+
+        fetchItems();
+    </script>
+</body>
+</html>

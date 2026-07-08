@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS clothes_v2 (
+    id SERIAL PRIMARY KEY,
+    brand VARCHAR(100),
+    name VARCHAR(100) NOT NULL,
+    material VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
