@@ -1,23 +1,27 @@
 const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
+const { fileURLToPath } = require('url');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
 
-// フロントエンド（HTMLファイル）を配信するための設定
-app.use(express.static(path.join(__dirname)));
+// ステップ2: フロントエンド（ビルド結果）の静的ファイルを配信する設定
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
 // PostgreSQLの接続設定
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'clothe_db',      // 👈 自分のデータベース名
-  password: 'postgre',        // 👈 自分のパスワード
+  database: 'clothe_db',
+  password: 'postgre',
   port: 5432,
 });
 
-// テーブルの自動作成（新項目に対応）
+// テーブルの自動作成
 const initDb = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS clothes_v2 (
@@ -31,7 +35,7 @@ const initDb = async () => {
 };
 initDb().catch(console.error);
 
-// 1. 服の一覧取得 (GET /api/items)
+// APIエンドポイント
 app.get('/api/items', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM clothes_v2 ORDER BY created_at DESC');
@@ -42,7 +46,6 @@ app.get('/api/items', async (req, res) => {
   }
 });
 
-// 2. 新しい服の登録 (POST /api/items)
 app.post('/api/items', async (req, res) => {
   const { brand, name, material } = req.body;
   if (!name) {
@@ -61,7 +64,8 @@ app.post('/api/items', async (req, res) => {
   }
 });
 
-const PORT = 3000;
+// ステップ3: ポート番号を環境変数対応（今回追加する部分）に直す
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
