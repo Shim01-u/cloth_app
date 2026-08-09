@@ -1,7 +1,8 @@
-const express = require('express');
-const { Pool } = require('pg');
-const path = require('path');
-const { fileURLToPath } = require('url');
+import express from 'express';
+import pkg from 'pg';
+const { Pool } = pkg;
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,8 +65,8 @@ app.post('/api/items', async (req, res) => {
   }
 });
 
-// ステップ3: ポート番号を環境変数対応（今回追加する部分）に直す
+// ステップ3: ポート番号の設定（ターミナルでクリックできるリンクを表示）
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
