@@ -10,15 +10,15 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.json());
 
-// ステップ2: フロントエンド（ビルド結果）の静的ファイルを配信する設定
+// フロントエンド（ビルド結果）の静的ファイルを配信する設定
 app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
-// PostgreSQLの接続設定
+// PostgreSQLの接続設定（VPS用の正しい情報）
 const pool = new Pool({
-  user: 'postgres',
+  user: 'student01',
   host: 'localhost',
-  database: 'clothe_db',
-  password: 'postgre',
+  database: 'student01_db',
+  password: '9EGL72fzjVX6',
   port: 5432,
 });
 
@@ -65,7 +65,7 @@ app.post('/api/items', async (req, res) => {
   }
 });
 
-// ステップ3: ポート番号の設定（ターミナルでクリックできるリンクを表示）
+// ポート番号の設定（環境変数からポートを取得）
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
