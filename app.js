@@ -37,8 +37,8 @@ const initDb = async () => {
 };
 initDb().catch(console.error);
 
-// APIエンドポイント
-app.get('/api/items', async (req, res) => {
+// APIエンドポイント（/api/items と /s01/api/items の両方に対応）
+app.get(['/api/items', '/s01/api/items'], async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM clothes_v2 ORDER BY created_at DESC');
     res.json(result.rows);
@@ -48,7 +48,7 @@ app.get('/api/items', async (req, res) => {
   }
 });
 
-app.post('/api/items', async (req, res) => {
+app.post(['/api/items', '/s01/api/items'], async (req, res) => {
   const { brand, name, material } = req.body;
   if (!name) {
     return res.status(400).json({ error: 'アイテム名は必須入力です' });
