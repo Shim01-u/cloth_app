@@ -23,6 +23,9 @@ const pool = new Pool({
   port: 5432,
 });
 
+// 接続設定の確認用ログを追加
+console.log("👉 接続設定中のデータベース:", pool.options.database);
+
 // テーブルの自動作成
 const initDb = async () => {
   await pool.query(`
