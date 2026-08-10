@@ -9,7 +9,7 @@ export default function App() {
   const [material, setMaterial] = useState('');
 
   useEffect(() => {
-    fetch("/api/items")
+    fetch("api/items")
       .then((res) => res.json())
       .then((data) => setClothes(data));
   }, []);
@@ -21,7 +21,7 @@ export default function App() {
     }
 
     try {
-      const res = await fetch("/api/items", {
+      const res = await fetch("api/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ brand, name, material }),
